@@ -1,0 +1,13 @@
+C:\Users\jackm\source\repos\chess_solver\chess_solver\bin\Debug\netcoreapp3.1\chess_solver.exe
+C:\Users\jackm\source\repos\chess_solver\chess_solver\bin\Debug\netcoreapp3.1\chess_solver.deps.json
+C:\Users\jackm\source\repos\chess_solver\chess_solver\bin\Debug\netcoreapp3.1\chess_solver.runtimeconfig.json
+C:\Users\jackm\source\repos\chess_solver\chess_solver\bin\Debug\netcoreapp3.1\chess_solver.runtimeconfig.dev.json
+C:\Users\jackm\source\repos\chess_solver\chess_solver\bin\Debug\netcoreapp3.1\chess_solver.dll
+C:\Users\jackm\source\repos\chess_solver\chess_solver\bin\Debug\netcoreapp3.1\chess_solver.pdb
+C:\Users\jackm\source\repos\chess_solver\chess_solver\obj\Debug\netcoreapp3.1\chess_solver.csprojAssemblyReference.cache
+C:\Users\jackm\source\repos\chess_solver\chess_solver\obj\Debug\netcoreapp3.1\chess_solver.AssemblyInfoInputs.cache
+C:\Users\jackm\source\repos\chess_solver\chess_solver\obj\Debug\netcoreapp3.1\chess_solver.AssemblyInfo.cs
+C:\Users\jackm\source\repos\chess_solver\chess_solver\obj\Debug\netcoreapp3.1\chess_solver.csproj.CoreCompileInputs.cache
+C:\Users\jackm\source\repos\chess_solver\chess_solver\obj\Debug\netcoreapp3.1\chess_solver.dll
+C:\Users\jackm\source\repos\chess_solver\chess_solver\obj\Debug\netcoreapp3.1\chess_solver.pdb
+C:\Users\jackm\source\repos\chess_solver\chess_solver\obj\Debug\netcoreapp3.1\chess_solver.genruntimeconfig.cache

@@ -1,0 +1,13 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace chess_solver
+{
+    public abstract class Piece
+    {
+        public char console_graphic { get; set; }
+        public enum piece_colour { };
+        public enum piece_type { };
+    }
+}
