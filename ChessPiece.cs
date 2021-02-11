@@ -114,8 +114,16 @@ namespace chess_solver
             }            
             #endregion graphic_selector
         }
+    }
+    struct move
+    {
+        (int, int) to;
+        (int, int) from;
 
-
-
+        public move((int,int) _to, (int,int) _from)
+        {
+            to = _to;
+            from = _from;
+        }
     }
 }
