@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using chess_solver.GameTree;
 
 namespace chess_solver
 {
@@ -21,6 +23,21 @@ namespace chess_solver
         {
             Board b = BaseChessBoard();
             Console.Write(b.ToString());
+            //The stack of moves. 
+            Stack stack = new Stack();
+
+            //The GameTree all moves will be inserted into
+            GameTree<Board> gt = new GameTree<Board>(new Node<Board>(null, b));
+
+            
+
+            //Step one: List all possible moves for current state. Should put this on a Stack.
+            //Step two: Make a move, and publish it to the Tree.
+            //Step three: Check if the game is won
+            //Step four: Show winning tree
+            //Step five: Show tree depth
+            //Step six: Show time elapsed
+            //Step seven: Repeat
 
             return true;
         }

@@ -45,20 +45,21 @@ namespace chess_solver
 
         public override string ToString()
         {
-            string output = "";
+            string output = "----------";
             for(int x = 0; x < board.Count; x++)
             {
-                for(int y = 0; y < board[x].Count; y++)
+                output += "\n|";
+                for (int y = 0; y < board[x].Count; y++)
                 {
                     //No piece
-                    if(!(board[x][y] is null))
+                    if (!(board[x][y] is null))
                     {
                         output += board[x][y].console_graphic;
                     }
                     else
                     {
                         //Figure out if a square is white or black
-                        if((x + y) % 2 == 0)
+                        if ((x + y) % 2 == 0)
                         {
                             output += 'X';
                         }
@@ -68,8 +69,9 @@ namespace chess_solver
                         }
                     }
                 }
-                output += "\n";
+                output += "|";
             }
+            output += "\n----------\n";
             return output;
         }
     }
