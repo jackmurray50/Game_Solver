@@ -12,7 +12,6 @@ namespace chess_solver.GameTree
         }
         public Node<T> root;
         public Node<T> cur;
-        int depth = 0;
         public void AddToNode(Node<T> _parent, Node<T> newNode)
         {
             newNode.parent = _parent;
@@ -50,7 +49,7 @@ namespace chess_solver.GameTree
     public class Node<T>
     {
         public Node<T> parent { get; set; }
-        public List<Node<T>> children;
+        public List<Node<T>> children = new List<Node<T>>();
         public T data;
         public Node(Node<T> _parent, T _data)
         {
