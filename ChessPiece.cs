@@ -155,12 +155,6 @@ namespace chess_solver
                 moves = PawnMoves(b);
 
             }
-            foreach(var m in moves)
-            {
-                Debug.Write(this.colour + "_" + this.type + "\n");
-                Debug.Write("\tFrom: " + x + ", " + y + "\n");
-                Debug.Write("\tTo: " + (m.Item1 + x) + ", " + (m.Item2 + y )+ "\n");
-            }
             //else if(this.type == piece_type.QUEEN)
             //{
             //    return QueenMoves(b);
@@ -201,7 +195,7 @@ namespace chess_solver
 
                     }
                 }
-                else //anything that isn't a horseman
+                else //anything that isn't a horseman or pawn
                 {
                     if (!(b.b[x + m.Item1][y + m.Item2] is null))//Check if theres another piece in the square
                     {
@@ -230,7 +224,7 @@ namespace chess_solver
         //{
 
         //}        
-        private List<(int,int)> PawnMoves(Board b)
+        private List<(int, int)> PawnMoves(Board b)
         {
             //All Vertical moves will be multiplied by this to make working out which way is 'south'
             //easier.
@@ -241,10 +235,29 @@ namespace chess_solver
             }
             List<(int, int)> possible_moves = new List<(int, int)>();
 
-            //Move 'forward' one space
-            possible_moves.Add((0, 1*compass));
-
-
+            //Move 'forward' one space if there's no piece in its way
+            //Check if it'll be out of range
+            if (y + 1 * compass < 7 || y + 1 * compass > 0)
+            {
+                if (b.b[x][y + (1 * compass)] is null)
+                {
+                    possible_moves.Add((0, 1 * compass));
+                }
+            }
+            //Move diagonal, but only if there's another piece in that square
+            if (x + 1 < 7 && x + 1 > 0 && y + (1 * compass) < 7 && y + (1 * compass) > 0)
+            {
+                if (!(b.b[x + 1][y + (1 * compass)] is null))
+                {
+                    possible_moves.Add((1, 1 * compass));
+                }
+            }
+            if (x - 1 < 7 && x - 1 > 0 && y + (1 * compass) < 7 && y + (1 * compass) > 0) { 
+                if (!(b.b[x - 1][y + (1 * compass)] is null))
+                {
+                    possible_moves.Add((-1, 1 * compass));
+                }
+            }
             //Check if the pawn is in its original place. If so, it can move up to 2 spaces.
             if (y == 1 && colour == piece_colour.BLACK ||
                 y == 6 && colour == piece_colour.WHITE)
@@ -253,12 +266,11 @@ namespace chess_solver
             }
             return possible_moves;
         }
-        //Move diagonal, but only if there's another piece in that square
-        #endregion moves
+    #endregion moves
 
-        public override Piece Copy()
+    public override Piece Copy()
         {
-            return new ChessPiece(this.c, this.t, this.x, this.y);
+            return new ChessPiece(c, t, x, y);
         }
     }
     public struct move

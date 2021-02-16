@@ -31,8 +31,9 @@ namespace chess_solver
         /// <summary>
         /// A constructor for a standard chess board.
         /// </summary>
-        public Board(int _x, int _y, GameType _gt)
+        public Board(int _x, int _y, GameType _gt, ChessPiece.piece_colour _turn)
         {
+            turn = _turn;
             pieces = new List<Piece>();
             size = (_x, _y);
             gt = _gt;
@@ -55,27 +56,39 @@ namespace chess_solver
         /// <returns>True if the king has been slain, false otherwise.</returns>
         public bool MakeMove(move m)
         {
-            bool output = false;
             if(gt == GameType.CHESS)
             {
                 //Check if the king is dead
                 if (!(board[m.to.Item1][m.to.Item2] is null)){ 
                     if(((ChessPiece)board[m.to.Item1][m.to.Item2]).t == ChessPiece.piece_type.KING){
-                        output = true;
+                        return true;
                     }   
                 }
             }
 
 
             //Move piece
-            Piece movingPiece = board[m.from.Item1][m.from.Item2];
-            board[m.from.Item1][m.from.Item2] = null;
-            if(!(board[m.to.Item1][m.to.Item2] is null))
+
+            //Hold the piece we're moving in memory
+            Piece movingPiece = (ChessPiece)board[m.from.Item1][m.from.Item2];
+            //See what you're killing
+             if(!(board[m.to.Item1][m.to.Item2] is null))
             {
-                Console.WriteLine(((ChessPiece)movingPiece).t + " killed a " +
-                    ((ChessPiece)board[m.to.Item1][m.to.Item2]).t + "\n");
+
+                Console.WriteLine(((ChessPiece)movingPiece).c + "_" + ((ChessPiece)movingPiece).t + 
+                    " killed a " +
+                    ((ChessPiece)board[m.to.Item1][m.to.Item2]).c + "_" + ((ChessPiece)board[m.to.Item1][m.to.Item2]).t + "\n");
             }
+            //Put the piece in its new position, overwriting the old space
             board[m.to.Item1][m.to.Item2] = movingPiece;
+            //Tell the piece where it is now
+            ((ChessPiece)movingPiece).x = m.to.Item1;
+            ((ChessPiece)movingPiece).y = m.to.Item2;
+            //Remove the piece being moved
+            board[m.from.Item1][m.from.Item2] = null;
+
+
+
 
             //Change turn
             if(this.turn == ChessPiece.piece_colour.BLACK)
@@ -86,7 +99,8 @@ namespace chess_solver
             {
                 this.turn = ChessPiece.piece_colour.BLACK;
             }
-            return output;
+
+            return false;
         }
 
         public List<move> PossibleMoves()
@@ -122,7 +136,7 @@ namespace chess_solver
 
         public Board Copy()
         {
-            Board nb = new Board(size.Item1, size.Item2, gt);
+            Board nb = new Board(size.Item1, size.Item2, gt, turn);
             foreach(ChessPiece piece in pieces)
             {
                 nb.SetUp(new piece_position(piece.Copy(), piece.x, piece.y));
@@ -131,7 +145,7 @@ namespace chess_solver
         }
         public override string ToString()
         {
-            string output = "  12345678\n------------";
+            string output = "  12345678\n-----------";
             for(int x = 0; x < board.Count; x++)
             {
                 output += "\n" + (char)(x+65) + "|";
@@ -157,7 +171,7 @@ namespace chess_solver
                 }
                 output += "|";
             }
-            output += "\n----------\n";
+            output += "\n-----------\n";
             return output;
         }
     }

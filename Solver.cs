@@ -42,20 +42,21 @@ namespace chess_solver
         /// <returns></returns>
         public static bool SolveChess(Board b, Node<Board> cur)
         {
-            foreach(var m in b.PossibleMoves())
+            Board newBoard = b.Copy();
+            foreach(var m in newBoard.PossibleMoves())
             {
                 //Things that need to happen:
                 //Each new child needs its own slightly modified board
-                Board newBoard = b.Copy();
                 if (!newBoard.MakeMove(m)) {
                     Console.WriteLine(newBoard.ToString());
                     Node<Board> node = new Node<Board>(newBoard);
                     cur.children.Add(node);
-                    SolveChess(b, node);
+                    SolveChess(newBoard, node);
                 }
                 else
                 {
                     Console.WriteLine(newBoard.ToString());
+                    Console.ReadKey();
                 }
             }
             return true;
@@ -63,7 +64,7 @@ namespace chess_solver
 
         public static Board BaseChessBoard()
         {
-            Board board = new Board(8, 8, Board.GameType.CHESS);
+            Board board = new Board(8, 8, Board.GameType.CHESS, ChessPiece.piece_colour.WHITE);
             board.SetUp(
                 new piece_position(
                     new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.ROOK, 0,0), 0, 0),
@@ -80,7 +81,7 @@ namespace chess_solver
                 new piece_position(
                     new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.HORSEMAN, 6,0), 6, 0),
                 new piece_position(
-                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.ROOK, 7,7), 7, 0),
+                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.ROOK, 7,0), 7, 0),
                 new piece_position(
                     new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.ROOK, 0,7), 0, 7),
                 new piece_position(
