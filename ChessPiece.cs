@@ -267,11 +267,6 @@ namespace chess_solver
             return possible_moves;
         }
     #endregion moves
-
-    public override Piece Copy()
-        {
-            return new ChessPiece(c, t, x, y);
-        }
     }
     public struct move
     {

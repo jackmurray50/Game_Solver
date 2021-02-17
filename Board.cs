@@ -84,7 +84,7 @@ namespace chess_solver
             //Tell the piece where it is now
             ((ChessPiece)movingPiece).x = m.to.Item1;
             ((ChessPiece)movingPiece).y = m.to.Item2;
-            //Remove the piece being moved
+            //Remove the piece being moved from its original position
             board[m.from.Item1][m.from.Item2] = null;
 
 
@@ -132,16 +132,6 @@ namespace chess_solver
                 return false;
             }
             return true;
-        }
-
-        public Board Copy()
-        {
-            Board nb = new Board(size.Item1, size.Item2, gt, turn);
-            foreach(ChessPiece piece in pieces)
-            {
-                nb.SetUp(new piece_position(piece.Copy(), piece.x, piece.y));
-            }
-            return nb;
         }
         public override string ToString()
         {

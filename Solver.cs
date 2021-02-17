@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using chess_solver.GameTree;
+using System.Diagnostics;
 
 namespace chess_solver
 {
@@ -37,18 +38,19 @@ namespace chess_solver
         /// <summary>
         /// Recursive SolveChess function.
         /// </summary>
-        /// <param name="b"></param>
-        /// <param name="gt"></param>
+        /// <param name="b">The board to start working on</param>
+        /// <param name="cur">The node to add children to</param>
         /// <returns></returns>
         public static bool SolveChess(Board b, Node<Board> cur)
         {
-            Board newBoard = b.Copy();
+            Board newBoard = ObjectExtensions.Copy(b);
+
             foreach(var m in newBoard.PossibleMoves())
             {
                 //Things that need to happen:
                 //Each new child needs its own slightly modified board
                 if (!newBoard.MakeMove(m)) {
-                    Console.WriteLine(newBoard.ToString());
+                    //Console.WriteLine(newBoard.ToString());
                     Node<Board> node = new Node<Board>(newBoard);
                     cur.children.Add(node);
                     SolveChess(newBoard, node);
@@ -59,6 +61,7 @@ namespace chess_solver
                     Console.ReadKey();
                 }
             }
+            Debug.WriteLine("End of branch");
             return true;
         }
 
