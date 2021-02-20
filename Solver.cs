@@ -2,6 +2,7 @@
 using System.Collections;
 using chess_solver.GameTree;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace chess_solver
 {
@@ -25,13 +26,13 @@ namespace chess_solver
         public static bool SolveChess()
         {
             Board b = BaseChessBoard();
-            Console.Write(b.ToString());
-            //The stack of moves. 
-            Stack stack = new Stack();
-
+            List<GameTree<move>> gametrees = new List<GameTree<move>>();
+            foreach(move m in b.PossibleMoves())
+            {
+                gametrees.Add(new GameTree<move>(new Node<move>(null, m)));
+                SolveChess(b, gametrees[gametrees.Count - 1 ].root);
+            }
             //The GameTree all moves will be inserted into
-            GameTree<Board> gt = new GameTree<Board>(new Node<Board>(null, b));
-            SolveChess(b, gt.root);
 
             return true;
         }
@@ -41,28 +42,25 @@ namespace chess_solver
         /// <param name="b">The board to start working on</param>
         /// <param name="cur">The node to add children to</param>
         /// <returns></returns>
-        public static bool SolveChess(Board b, Node<Board> cur)
+        public static void SolveChess(Board b, Node<move> cur)
         {
-            Board newBoard = ObjectExtensions.Copy(b);
-
-            foreach(var m in newBoard.PossibleMoves())
+            //Create a copy of the board
+            Board newBoard = b.Copy();
+            foreach(move m in newBoard.PossibleMoves())
             {
-                //Things that need to happen:
-                //Each new child needs its own slightly modified board
-                if (!newBoard.MakeMove(m)) {
-                    //Console.WriteLine(newBoard.ToString());
-                    Node<Board> node = new Node<Board>(newBoard);
-                    cur.children.Add(node);
-                    SolveChess(newBoard, node);
+                Node<move> newnode = new Node<move>(cur, m);
+                if (newBoard.MakeMove(m))
+                {
+                    //In an async function, add the required moves to a text file.
+                    //For now, just yell
+                    Console.WriteLine("SOMEONE WON");
                 }
                 else
                 {
-                    Console.WriteLine(newBoard.ToString());
-                    Console.ReadKey();
+                    Console.WriteLine(m);
+                    SolveChess(newBoard, newnode);
                 }
             }
-            Debug.WriteLine("End of branch");
-            return true;
         }
 
         public static Board BaseChessBoard()

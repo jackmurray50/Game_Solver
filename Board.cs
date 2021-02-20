@@ -56,6 +56,9 @@ namespace chess_solver
         /// <returns>True if the king has been slain, false otherwise.</returns>
         public bool MakeMove(move m)
         {
+            Debug.WriteLine("Original board-state");
+            Debug.WriteLine(this.ToString());
+
             if(gt == GameType.CHESS)
             {
                 //Check if the king is dead
@@ -73,25 +76,26 @@ namespace chess_solver
             Piece movingPiece = (ChessPiece)board[m.from.Item1][m.from.Item2];
             //See what you're killing
              if(!(board[m.to.Item1][m.to.Item2] is null))
-            {
-
+             {
+                pieces.Remove(board[m.to.Item1][m.to.Item2]);
                 Console.WriteLine(((ChessPiece)movingPiece).c + "_" + ((ChessPiece)movingPiece).t + 
                     " killed a " +
                     ((ChessPiece)board[m.to.Item1][m.to.Item2]).c + "_" + ((ChessPiece)board[m.to.Item1][m.to.Item2]).t + "\n");
-            }
+             }
             //Put the piece in its new position, overwriting the old space
             board[m.to.Item1][m.to.Item2] = movingPiece;
+            Debug.WriteLine("post-move board-state");
+            Debug.WriteLine(this.ToString());
             //Tell the piece where it is now
             ((ChessPiece)movingPiece).x = m.to.Item1;
             ((ChessPiece)movingPiece).y = m.to.Item2;
             //Remove the piece being moved from its original position
             board[m.from.Item1][m.from.Item2] = null;
-
-
-
+            Debug.WriteLine("post-delete board-state");
+            Debug.WriteLine(this.ToString());
 
             //Change turn
-            if(this.turn == ChessPiece.piece_colour.BLACK)
+            if (this.turn == ChessPiece.piece_colour.BLACK)
             {
                 this.turn = ChessPiece.piece_colour.WHITE;
             }
@@ -99,7 +103,7 @@ namespace chess_solver
             {
                 this.turn = ChessPiece.piece_colour.BLACK;
             }
-
+            Debug.WriteLine("END\n\n\n\n\n");
             return false;
         }
 

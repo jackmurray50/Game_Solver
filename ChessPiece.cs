@@ -175,10 +175,7 @@ namespace chess_solver
                     toRemove.Add(m);
                 }
             }
-            foreach(var m in toRemove)
-            {
-                    moves.Remove(m);
-            }
+
             //For each possible move, check if its occupied and if so, which colour
             foreach (var m in moves)
             {
@@ -202,16 +199,20 @@ namespace chess_solver
                         //Check the colour of the piece. If it's the same colour, stop movement.
                         if (((ChessPiece)b.b[x + m.Item1][y + m.Item2]).colour == this.colour)
                         {
-
+                            toRemove.Add(m);
                         }
 
                     }
                 }
 
             }
-            foreach(var m in moves)
+            foreach (var m in toRemove)
             {
-                output.Add(new move((x+m.Item1,y+m.Item2), (x, y)));
+                moves.Remove(m);
+            }
+            foreach (var m in moves)
+            {
+                output.Add(new move((x+m.Item1, y+m.Item2), (x, y)));
             }
             return output;
         }
@@ -235,6 +236,28 @@ namespace chess_solver
             }
             List<(int, int)> possible_moves = new List<(int, int)>();
 
+
+            //Move diagonal, but only if there's another piece in that square
+            if ((x + 1) < 7 && 
+                (x + 1) > 0 && 
+                y + (1 * compass) < 7 && 
+                y + (1 * compass) > 0)
+            {
+                if (!(b.b[x + 1][y + (1 * compass)] is null))
+                {
+                    possible_moves.Add((1, 1 * compass));
+                }
+            }
+            if ((x - 1) < 7 &&
+                (x - 1) > 0 &&
+                y + (1 * compass) < 7 &&
+                y + (1 * compass) > 0)
+            {
+                if (!(b.b[x - 1][y + (1 * compass)] is null))
+                {
+                    possible_moves.Add((-1, 1 * compass));
+                }
+            }
             //Move 'forward' one space if there's no piece in its way
             //Check if it'll be out of range
             if (y + 1 * compass < 7 || y + 1 * compass > 0)
@@ -244,25 +267,16 @@ namespace chess_solver
                     possible_moves.Add((0, 1 * compass));
                 }
             }
-            //Move diagonal, but only if there's another piece in that square
-            if (x + 1 < 7 && x + 1 > 0 && y + (1 * compass) < 7 && y + (1 * compass) > 0)
-            {
-                if (!(b.b[x + 1][y + (1 * compass)] is null))
-                {
-                    possible_moves.Add((1, 1 * compass));
-                }
-            }
-            if (x - 1 < 7 && x - 1 > 0 && y + (1 * compass) < 7 && y + (1 * compass) > 0) { 
-                if (!(b.b[x - 1][y + (1 * compass)] is null))
-                {
-                    possible_moves.Add((-1, 1 * compass));
-                }
-            }
             //Check if the pawn is in its original place. If so, it can move up to 2 spaces.
-            if (y == 1 && colour == piece_colour.BLACK ||
-                y == 6 && colour == piece_colour.WHITE)
+            if ((y == 1 && colour == piece_colour.BLACK) ||
+                (y == 6 && colour == piece_colour.WHITE))
             {
-                possible_moves.Add((0, compass * 2));
+                {
+                    if (b.b[x][y + (1 * compass)] is null)
+                    {
+                        possible_moves.Add((0, 2 * compass));
+                    }
+                }
             }
             return possible_moves;
         }
@@ -277,6 +291,11 @@ namespace chess_solver
         {
             to = _to;
             from = _from;
+        }
+
+        public override string ToString()
+        {
+            return $"From: {from.Item1},{from.Item2}  to: {to.Item1},{to.Item2}";
         }
     }
 }
