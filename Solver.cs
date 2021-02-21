@@ -38,12 +38,17 @@ namespace chess_solver
         }
         /// <summary>
         /// Recursive SolveChess function.
+        /// TODO: Limit the ability for the AI to do infinite amounts of going backwards and forwards
+        /// Could limit it to 300 moves, since longest game is 269? But then its not quite accurate
+        /// 
         /// </summary>
         /// <param name="b">The board to start working on</param>
         /// <param name="cur">The node to add children to</param>
         /// <returns></returns>
+        private static int iterations = 0;
         public static void SolveChess(Board b, Node<move> cur)
         {
+            iterations++;
             //Create a copy of the board
             Board newBoard = b.Copy();
             foreach(move m in newBoard.PossibleMoves())
@@ -57,7 +62,28 @@ namespace chess_solver
                 }
                 else
                 {
-                    Console.WriteLine(m);
+                    string output = newBoard.ToString(m);
+                    foreach (char c in output)
+                    {
+                        //The string is formatted so the place the piece came from is
+                        //in red, and the place its going is in green
+                        if (c == '[')
+                        {
+                            Console.BackgroundColor = ConsoleColor.Red;
+                        }
+                        else if (c == ']' || c == '}')
+                        {
+                            Console.BackgroundColor = ConsoleColor.Black;
+                        }
+                        else if (c == '{')
+                        {
+                            Console.BackgroundColor = ConsoleColor.Green;
+                        }
+                        else
+                        {
+                            Console.Write(c);
+                        }
+                    }
                     SolveChess(newBoard, newnode);
                 }
             }
@@ -67,52 +93,34 @@ namespace chess_solver
         {
             Board board = new Board(8, 8, Board.GameType.CHESS, ChessPiece.piece_colour.WHITE);
             board.SetUp(
-                new piece_position(
-                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.ROOK, 0,0), 0, 0),
-                new piece_position(
-                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.HORSEMAN, 1,0), 1,0),
-                new piece_position(
-                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.BISHOP, 2,0), 2, 0),
-                new piece_position(
-                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.QUEEN, 3,0), 3, 0),
-                new piece_position(
-                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.KING, 4,0), 4, 0),
-                new piece_position(
-                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.BISHOP, 5,0), 5, 0),
-                new piece_position(
-                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.HORSEMAN, 6,0), 6, 0),
-                new piece_position(
-                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.ROOK, 7,0), 7, 0),
-                new piece_position(
-                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.ROOK, 0,7), 0, 7),
-                new piece_position(
-                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.HORSEMAN, 1,7), 1, 7),
-                new piece_position(
-                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.BISHOP, 2,7), 2, 7),
-                new piece_position(
-                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.QUEEN, 3,7), 3, 7),
-                new piece_position(
-                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.KING, 4,7), 4, 7),
-                new piece_position(
-                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.BISHOP, 5,7), 5, 7),
-                new piece_position(
-                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.HORSEMAN, 6,7), 6, 7),
-                new piece_position(
-                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.ROOK, 7,7), 7, 7)
+                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.ROOK, 0,0),
+                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.HORSEMAN, 1,0),
+                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.BISHOP, 2,0),
+                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.QUEEN, 3,0),
+                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.KING, 4,0),
+                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.BISHOP, 5,0),
+                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.HORSEMAN, 6,0),
+                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.ROOK, 7,0),
+                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.ROOK, 0,7),
+                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.HORSEMAN, 1,7),
+                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.BISHOP, 2,7),
+                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.QUEEN, 3,7),
+                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.KING, 4,7),
+                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.BISHOP, 5,7),
+                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.HORSEMAN, 6,7),
+                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.ROOK, 7,7)
                 );
             //Handle pawns in a for loop
             for(int i = 0; i < 8; i++)
             {
                 board.SetUp(
-                    new piece_position(
-                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.PAWN, i, 6), i, 6));
+                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.PAWN, i, 6));
             }            
             //Handle pawns in a for loop
             for(int i = 0; i < 8; i++)
             {
                 board.SetUp(
-                    new piece_position(
-                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.PAWN, i, 1), i, 1));
+                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.PAWN, i, 1));
             }
 
             return board;

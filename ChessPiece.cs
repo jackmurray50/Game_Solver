@@ -7,7 +7,6 @@ namespace chess_solver
 {
     class ChessPiece : Piece
     {
-        public string name { get; set; }
         new public enum piece_colour
         {
             BLACK,
@@ -204,7 +203,6 @@ namespace chess_solver
 
                     }
                 }
-
             }
             foreach (var m in toRemove)
             {
@@ -260,7 +258,7 @@ namespace chess_solver
             }
             //Move 'forward' one space if there's no piece in its way
             //Check if it'll be out of range
-            if (y + 1 * compass < 7 || y + 1 * compass > 0)
+            if (y + (1 * compass) < 7 || y + (1 * compass) > 0)
             {
                 if (b.b[x][y + (1 * compass)] is null)
                 {
