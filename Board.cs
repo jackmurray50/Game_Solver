@@ -71,8 +71,7 @@ namespace chess_solver
 
             //Hold the piece we're moving in memory
             Piece movingPiece = (ChessPiece)board[m.from.Item1][m.from.Item2];
-            ((ChessPiece)movingPiece).x = m.to.Item1;
-            ((ChessPiece)movingPiece).y = m.to.Item2;
+
             //See what you're killing
             if(!(board[m.to.Item1][m.to.Item2] is null))
             {
@@ -84,6 +83,8 @@ namespace chess_solver
             //Put the piece in its new position, overwriting the old space
             board[m.to.Item1][m.to.Item2] = movingPiece;
             //Tell the piece where it is now
+            ((ChessPiece)movingPiece).x = m.to.Item1;
+            ((ChessPiece)movingPiece).y = m.to.Item2;
             //Remove the piece being moved from its original position
             board[m.from.Item1][m.from.Item2] = null;
 
@@ -97,12 +98,13 @@ namespace chess_solver
                 this.turn = ChessPiece.piece_colour.BLACK;
             }
             
+            //50 turn rule
             if(TurnsSinceCapture > 50)
             {
                 //Signifies a draw
                 return true;
             }
-            this.TurnsSinceCapture++;
+            this.TurnsSinceCapture++;   
             
             return false;
         }
@@ -227,6 +229,31 @@ namespace chess_solver
             }
             output += "\n-----------\n";
             return output;
+        }
+    
+        //Create a deep copy
+        public Board Copy()
+        {
+            //Create the board
+            Board newBoard = new Board(board.Count, board[0].Count, GameType.CHESS, this.turn);
+            for(int x = 0; x < board.Count; x++)
+            {
+                for(int y = 0; y < board[x].Count; y++)
+                {
+                    if(board[x][y] is null)
+                    {
+                        newBoard.b[x][y] = null;
+                    }
+                    else
+                    {
+                        ChessPiece temp = (ChessPiece)board[x][y];
+                        ChessPiece newPiece = new ChessPiece(temp.c, temp.t, temp.x, temp.y);
+                        newBoard.SetUp(newPiece);
+                    }
+                }
+            }
+            return newBoard;
+
         }
     }
 }
