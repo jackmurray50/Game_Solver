@@ -38,9 +38,6 @@ namespace chess_solver
         }
         /// <summary>
         /// Recursive SolveChess function.
-        /// TODO: Limit the ability for the AI to do infinite amounts of going backwards and forwards
-        /// Could limit it to 300 moves, since longest game is 269? But then its not quite accurate
-        /// 
         /// </summary>
         /// <param name="b">The board to start working on</param>
         /// <param name="cur">The node to add children to</param>
@@ -128,5 +125,6 @@ namespace chess_solver
 
         public static int WhiteWins = 0;
         public static int BlackWins = 0;
+        public static int draws = 0;
     }
 }

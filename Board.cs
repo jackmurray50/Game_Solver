@@ -26,7 +26,7 @@ namespace chess_solver
         }
 
         public ChessPiece.piece_colour turn = ChessPiece.piece_colour.WHITE;
-
+        public int TurnsSinceCapture = 0;
         private List<Piece> pieces;
         /// <summary>
         /// A constructor for a standard chess board.
@@ -96,6 +96,14 @@ namespace chess_solver
             {
                 this.turn = ChessPiece.piece_colour.BLACK;
             }
+            
+            if(TurnsSinceCapture > 50)
+            {
+                //Signifies a draw
+                return true;
+            }
+            this.TurnsSinceCapture++;
+            
             return false;
         }
 
