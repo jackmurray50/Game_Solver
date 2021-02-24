@@ -8,8 +8,10 @@ namespace chess_solver
     /// <summary>
     /// A chess board with pieces
     /// </summary>
-    class Board
+    public class Board
     {
+        //Debugging
+        public string name = "";
         public enum GameType
         {
             CHESS
@@ -27,14 +29,12 @@ namespace chess_solver
 
         public ChessPiece.piece_colour turn = ChessPiece.piece_colour.WHITE;
         public int TurnsSinceCapture = 0;
-        private List<Piece> pieces;
         /// <summary>
         /// A constructor for a standard chess board.
         /// </summary>
         public Board(int _x, int _y, GameType _gt, ChessPiece.piece_colour _turn)
         {
             turn = _turn;
-            pieces = new List<Piece>();
             size = (_x, _y);
             gt = _gt;
 
@@ -49,6 +49,8 @@ namespace chess_solver
                 }
             }
         }
+        
+        
         /// <summary>
         /// 
         /// </summary>
@@ -75,16 +77,19 @@ namespace chess_solver
             //See what you're killing
             if(!(board[m.to.Item1][m.to.Item2] is null))
             {
-               pieces.Remove(board[m.to.Item1][m.to.Item2]);
-               Console.WriteLine(((ChessPiece)movingPiece).c + "_" + ((ChessPiece)movingPiece).t + 
-               " killed a " +
-               ((ChessPiece)board[m.to.Item1][m.to.Item2]).c + "_" + ((ChessPiece)board[m.to.Item1][m.to.Item2]).t + "\n");
+                //     Console.WriteLine(((ChessPiece)movingPiece).c + "_" + ((ChessPiece)movingPiece).t + 
+                //     " killed a " +
+                //     ((ChessPiece)board[m.to.Item1][m.to.Item2]).c + "_" + ((ChessPiece)board[m.to.Item1][m.to.Item2]).t + "\n");
+                //
+                if (((ChessPiece)board[m.to.Item1][m.to.Item2]).t != ChessPiece.piece_type.PAWN) { 
+                Console.WriteLine(((ChessPiece)movingPiece).c + "_" + ((ChessPiece)movingPiece).t +
+                 " killed a " +
+                 ((ChessPiece)board[m.to.Item1][m.to.Item2]).c + "_" + ((ChessPiece)board[m.to.Item1][m.to.Item2]).t + "\n");
+                }
+
             }
             //Put the piece in its new position, overwriting the old space
             board[m.to.Item1][m.to.Item2] = movingPiece;
-            //Tell the piece where it is now
-            ((ChessPiece)movingPiece).x = m.to.Item1;
-            ((ChessPiece)movingPiece).y = m.to.Item2;
             //Remove the piece being moved from its original position
             board[m.from.Item1][m.from.Item2] = null;
 
@@ -114,41 +119,22 @@ namespace chess_solver
             List < move > pm= new List<move>();
             if(this.gt == GameType.CHESS)
             {
-                foreach (ChessPiece p in pieces)
+                for(int x = 0; x < board.Count; x++)
                 {
-                    if(p.c == this.turn)
+                    for(int y = 0; y < board[x].Count; y++)
                     {
-                        pm.AddRange(p.PossibleMoves(this));
+                        if(!(board[x][y] is null))
+                        {
+                            pm.AddRange(((ChessPiece)board[x][y]).PossibleMoves(this, (x,y)));
+                        }
                     }
                 }
             }
             return pm;
         }
 
-        public bool SetUp(params ChessPiece[] pieces) {
-            this.pieces.Clear();
-            try
-            {
-                foreach(var p in pieces)
-                {
-                    board[p.x][p.y] = p;
-                }
-            } catch(Exception)
-            {
-                return false;
-            }
-            for(int x = 0; x < board.Count; x++)
-            {
-                for(int y = 0; y < board[x].Count; y++)
-                {
-                    if(!(board[x][y] is null)){
-                        ChessPiece toAdd = (ChessPiece)board[x][y];
-                        toAdd.x = x;
-                        toAdd.y = y;
-                        this.pieces.Add(toAdd);
-                    }
-                }
-            }
+        public bool SetUp(ChessPiece piece, int x, int y) {
+            board[x][y] = piece;
 
             return true;
         }
@@ -247,8 +233,8 @@ namespace chess_solver
                     else
                     {
                         ChessPiece temp = (ChessPiece)board[x][y];
-                        ChessPiece newPiece = new ChessPiece(temp.c, temp.t, temp.x, temp.y);
-                        newBoard.SetUp(newPiece);
+                        ChessPiece newPiece = new ChessPiece(temp.c, temp.t);
+                        newBoard.SetUp(newPiece, x, y);
                     }
                 }
             }

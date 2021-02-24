@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace chess_solver
 {
-    class ChessPiece : Piece
+    public class ChessPiece : Piece
     {
         new public enum piece_colour
         {
@@ -36,16 +36,14 @@ namespace chess_solver
 
         public char graphic { get; set; }
 
-        public int x = 0;
-        public int y = 0;
 
-        public ChessPiece(piece_colour _colour, piece_type _type, int _x, int _y)
+        bool post_constructed = false;
+
+        public ChessPiece(piece_colour _colour, piece_type _type)
         {
             graphic = '\u265B';
             colour = _colour;
             type = _type;
-            x = _x;
-            y = _y;
             #region graphic_selector
             if (_type == piece_type.PAWN)
             {
@@ -130,7 +128,7 @@ namespace chess_solver
         }
 
          #region moves
-        public List<move> PossibleMoves(Board b)
+        public List<move> PossibleMoves(Board b, (int,int) position)
         {
             //The fully featured set of moves including starting position
             List < move > output = new List<move>();
@@ -142,16 +140,16 @@ namespace chess_solver
 
             //}else if(this.type == piece_type.HORSEMAN)
             //{
-            //    return HorsemanMoves(b);
+            //    return HorsemanMoves(b); }
 
-            //}else if(this.type == piece_type.KING)
-            //{
-            //    return KingMoves(b);
+            if(this.type == piece_type.KING)
+            {
+                moves = KingMoves(b, position);
 
-            //} else
+            }
             if(this.type == piece_type.PAWN)
             {
-                moves = PawnMoves(b);
+                moves = PawnMoves(b, position);
 
             }
             //else if(this.type == piece_type.QUEEN)
@@ -170,21 +168,25 @@ namespace chess_solver
             foreach(var m in moves)
             {
                 //Check if it'd go off the board; if so, don't allow it to.
-                if (x + m.Item1 > 7 || y + m.Item2 > 7 || x + m.Item1 < 0 || y + m.Item2 < 0) {
+                if (position.Item1 + m.Item1 > 7 || position.Item2 + m.Item2 > 7 || 
+                    position.Item1 + m.Item1 < 0 || position.Item2 + m.Item2 < 0) {
                     toRemove.Add(m);
                 }
             }
-
+            foreach (var m in toRemove)
+            {
+                moves.Remove(m);
+            }
             //For each possible move, check if its occupied and if so, which colour
             foreach (var m in moves)
             {
                 //Horsemen use different movement rules, so they get their own block
                 if(this.type == ChessPiece.piece_type.HORSEMAN)
                 {
-                    if (!(b.b[x + m.Item1][y + m.Item2] is null))//Check if theres another piece in the square
+                    if (!(b.b[position.Item1 + m.Item1][position.Item2 + m.Item2] is null))//Check if theres another piece in the square
                     {
                         //Check the colour of the piece. If it's the same colour, stop movement.
-                        if (((ChessPiece)b.b[x + 1][y + 1]).colour == this.colour)
+                        if (((ChessPiece)b.b[position.Item1 + 1][position.Item2 + 1]).colour == this.colour)
                         {   
                             moves.Remove(m);
                         }
@@ -193,10 +195,10 @@ namespace chess_solver
                 }
                 else //anything that isn't a horseman or pawn
                 {
-                    if (!(b.b[x + m.Item1][y + m.Item2] is null))//Check if theres another piece in the square
+                    if (!(b.b[position.Item1 + m.Item1][position.Item2 + m.Item2] is null))//Check if theres another piece in the square
                     {
                         //Check the colour of the piece. If it's the same colour, stop movement.
-                        if (((ChessPiece)b.b[x + m.Item1][y + m.Item2]).colour == this.colour)
+                        if (((ChessPiece)b.b[position.Item1 + m.Item1][position.Item2 + m.Item2]).colour == this.colour)
                         {
                             toRemove.Add(m);
                         }
@@ -210,7 +212,8 @@ namespace chess_solver
             }
             foreach (var m in moves)
             {
-                output.Add(new move((x+m.Item1, y+m.Item2), (x, y)));
+
+                output.Add(new move((position.Item1 + m.Item1, position.Item2+m.Item2),position, this));
             }
             return output;
         }
@@ -223,10 +226,22 @@ namespace chess_solver
         //{
 
         //}        
-        private List<(int, int)> PawnMoves(Board b)
+        private List<(int,int)> KingMoves(Board b, (int,int) position)
         {
-            //All Vertical moves will be multiplied by this to make working out which way is 'south'
-            //easier.
+            List<(int, int)> moves = new List<(int, int)>();
+            moves.Add((1, 1));
+            moves.Add((1, 0));
+            moves.Add((1, -1));
+            moves.Add((0, 1));
+            moves.Add((0, -1));
+            moves.Add((-1, -1));
+            moves.Add((-1, 0));
+            moves.Add((-1, 1));
+            return moves;
+        }
+        private List<(int, int)> PawnMoves(Board b, (int,int) position)
+        {
+            //All Horizontal moves will be multiplied by this to ensure the pawns only go 'forwards'
             int compass = -1;
             if (colour == ChessPiece.piece_colour.BLACK)
             {
@@ -236,41 +251,41 @@ namespace chess_solver
 
 
             //Move diagonal, but only if there's another piece in that square
-            if ((x + 1) < 7 && 
-                (x + 1) > 0 && 
-                y + (1 * compass) < 7 && 
-                y + (1 * compass) > 0)
+            if ((position.Item1+ 1) < 7 && 
+                (position.Item1+ 1) > 0 && 
+                position.Item2+ (1 * compass) < 7 && 
+                position.Item2+ (1 * compass) > 0)
             {
-                if (!(b.b[x + 1][y + (1 * compass)] is null))
+                if (!(b.b[position.Item1+ 1][position.Item2+ (1 * compass)] is null))
                 {
                     possible_moves.Add((1, 1 * compass));
                 }
             }
-            if ((x - 1) < 7 &&
-                (x - 1) > 0 &&
-                y + (1 * compass) < 7 &&
-                y + (1 * compass) > 0)
+            if ((position.Item1- 1) < 7 &&
+                (position.Item1- 1) > 0 &&
+                position.Item2+ (1 * compass) < 7 &&
+                position.Item2+ (1 * compass) > 0)
             {
-                if (!(b.b[x - 1][y + (1 * compass)] is null))
+                if (!(b.b[position.Item1- 1][position.Item2+ (1 * compass)] is null))
                 {
                     possible_moves.Add((-1, 1 * compass));
                 }
             }
             //Move 'forward' one space if there's no piece in its way
             //Check if it'll be out of range
-            if (y + (1 * compass) < 7 || y + (1 * compass) > 0)
+            if (position.Item2+ (1 * compass) < 7 && position.Item2+ (1 * compass) >= 0)
             {
-                if (b.b[x][y + (1 * compass)] is null)
+                if (b.b[position.Item1][position.Item2 + (1 * compass)] is null)
                 {
                     possible_moves.Add((0, 1 * compass));
                 }
             }
             //Check if the pawn is in its original place. If so, it can move up to 2 spaces.
-            if ((y == 1 && colour == piece_colour.BLACK) ||
-                (y == 6 && colour == piece_colour.WHITE))
+            if ((position.Item2== 1 && colour == piece_colour.BLACK) ||
+                (position.Item2== 6 && colour == piece_colour.WHITE))
             {
                 {
-                    if (b.b[x][y + (1 * compass)] is null)
+                    if (b.b[position.Item1][position.Item2 + (1 * compass)] is null)
                     {
                         possible_moves.Add((0, 2 * compass));
                     }
@@ -284,10 +299,12 @@ namespace chess_solver
     {
         public (int, int) to;
         public (int, int) from;
+        public ChessPiece piece;
 
-        public move((int,int) _to, (int,int) _from)
+        public move((int,int) _to, (int,int) _from, ChessPiece _piece)
         {
             to = _to;
+            piece = _piece;
             from = _from;
         }
 

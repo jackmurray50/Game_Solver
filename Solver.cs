@@ -48,39 +48,44 @@ namespace chess_solver
             iterations++;
             //Create a copy of the board
             Board newBoard = b.Copy();
-            foreach(move m in newBoard.PossibleMoves())
+            newBoard.name = "Board " + iterations;
+            List<move> possibleMoves = newBoard.PossibleMoves();
+            foreach(move m in possibleMoves)
             {
+                string output = newBoard.ToString(m);
+                foreach (char c in output)
+                {
+                    //the string is formatted so the place the piece came from is
+                    //in red, and the place its going is in green
+                    if (c == '[')
+                    {
+                        Console.BackgroundColor = ConsoleColor.Red;
+                    }
+                    else if (c == ']' || c == '}')
+                    {
+                        Console.BackgroundColor = ConsoleColor.Black;
+                    }
+                    else if (c == '{')
+                    {
+                        Console.BackgroundColor = ConsoleColor.Green;
+                    }
+                    else
+                    {
+                        Console.Write(c);
+                    }
+                }
+                //Check if the piece still exists
                 Node<move> newnode = new Node<move>(cur, m);
                 if (newBoard.MakeMove(m))
                 {
                     //In an async function, add the required moves to a text file.
                     //For now, just yell
                     Console.WriteLine("SOMEONE WON");
+                    Console.ReadKey();
                 }
                 else
                 {
-                    string output = newBoard.ToString(m);
-                    foreach (char c in output)
-                    {
-                        //The string is formatted so the place the piece came from is
-                        //in red, and the place its going is in green
-                        if (c == '[')
-                        {
-                            Console.BackgroundColor = ConsoleColor.Red;
-                        }
-                        else if (c == ']' || c == '}')
-                        {
-                            Console.BackgroundColor = ConsoleColor.Black;
-                        }
-                        else if (c == '{')
-                        {
-                            Console.BackgroundColor = ConsoleColor.Green;
-                        }
-                        else
-                        {
-                            Console.Write(c);
-                        }
-                    }
+                    
                     SolveChess(newBoard, newnode);
                 }
             }
@@ -89,35 +94,33 @@ namespace chess_solver
         public static Board BaseChessBoard()
         {
             Board board = new Board(8, 8, Board.GameType.CHESS, ChessPiece.piece_colour.WHITE);
-            board.SetUp(
-                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.ROOK, 0,0),
-                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.HORSEMAN, 1,0),
-                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.BISHOP, 2,0),
-                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.QUEEN, 3,0),
-                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.KING, 4,0),
-                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.BISHOP, 5,0),
-                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.HORSEMAN, 6,0),
-                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.ROOK, 7,0),
-                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.ROOK, 0,7),
-                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.HORSEMAN, 1,7),
-                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.BISHOP, 2,7),
-                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.QUEEN, 3,7),
-                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.KING, 4,7),
-                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.BISHOP, 5,7),
-                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.HORSEMAN, 6,7),
-                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.ROOK, 7,7)
-                );
+            board.SetUp(new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.ROOK), 0,0);
+            board.SetUp(new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.HORSEMAN), 1, 0);
+            board.SetUp(new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.BISHOP), 2, 0);
+            board.SetUp(new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.QUEEN), 3, 0);
+            board.SetUp(new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.KING), 4, 0);
+            board.SetUp(new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.BISHOP), 5, 0);
+            board.SetUp(new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.HORSEMAN), 6, 0);
+            board.SetUp(new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.ROOK), 7, 0);
+            board.SetUp(new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.ROOK), 0, 7);
+            board.SetUp(new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.HORSEMAN), 1, 7);
+            board.SetUp(new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.BISHOP), 2, 7);
+            board.SetUp(new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.QUEEN), 3, 7);
+            board.SetUp(new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.KING), 4, 7);
+            board.SetUp(new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.BISHOP), 5, 7);
+            board.SetUp(new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.HORSEMAN), 6, 7);
+            board.SetUp(new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.ROOK), 7,7);
             //Handle pawns in a for loop
             for(int i = 0; i < 8; i++)
             {
                 board.SetUp(
-                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.PAWN, i, 6));
+                    new ChessPiece(ChessPiece.piece_colour.WHITE, ChessPiece.piece_type.PAWN), i, 6);
             }            
             //Handle pawns in a for loop
             for(int i = 0; i < 8; i++)
             {
                 board.SetUp(
-                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.PAWN, i, 1));
+                    new ChessPiece(ChessPiece.piece_colour.BLACK, ChessPiece.piece_type.PAWN), i, 1);
             }
 
             return board;
