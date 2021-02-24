@@ -3,6 +3,7 @@ using System.Collections;
 using chess_solver.GameTree;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace chess_solver
 {
@@ -42,50 +43,47 @@ namespace chess_solver
         /// <param name="b">The board to start working on</param>
         /// <param name="cur">The node to add children to</param>
         /// <returns></returns>
-        private static int iterations = 0;
         public static void SolveChess(Board b, Node<move> cur)
         {
-            iterations++;
             //Create a copy of the board
             Board newBoard = b.Copy();
-            newBoard.name = "Board " + iterations;
             List<move> possibleMoves = newBoard.PossibleMoves();
             foreach(move m in possibleMoves)
             {
-                string output = newBoard.ToString(m);
-                foreach (char c in output)
-                {
-                    //the string is formatted so the place the piece came from is
-                    //in red, and the place its going is in green
-                    if (c == '[')
-                    {
-                        Console.BackgroundColor = ConsoleColor.Red;
-                    }
-                    else if (c == ']' || c == '}')
-                    {
-                        Console.BackgroundColor = ConsoleColor.Black;
-                    }
-                    else if (c == '{')
-                    {
-                        Console.BackgroundColor = ConsoleColor.Green;
-                    }
-                    else
-                    {
-                        Console.Write(c);
-                    }
-                }
+
                 //Check if the piece still exists
                 Node<move> newnode = new Node<move>(cur, m);
                 if (newBoard.MakeMove(m))
                 {
+                    string output = newBoard.ToString(m);
+                    foreach (char c in output)
+                    {
+                        //the string is formatted so the place the piece came from is
+                        //in red, and the place its going is in green
+                        if (c == '[')
+                        {
+                            Console.BackgroundColor = ConsoleColor.Red;
+                        }
+                        else if (c == ']' || c == '}')
+                        {
+                            Console.BackgroundColor = ConsoleColor.Black;
+                        }
+                        else if (c == '{')
+                        {
+                            Console.BackgroundColor = ConsoleColor.Green;
+                        }
+                        else
+                        {
+                            Console.Write(c);
+                        }
+                    }
+                    Console.Write($"\nBlack wins: {BlackWins}\nWhite wins: {WhiteWins}\nDraws: {draws}\nTotal games: {BlackWins + WhiteWins + draws}\n");
                     //In an async function, add the required moves to a text file.
+                    DetermineWinner(newBoard);
                     //For now, just yell
-                    Console.WriteLine("SOMEONE WON");
-                    Console.ReadKey();
                 }
                 else
                 {
-                    
                     SolveChess(newBoard, newnode);
                 }
             }
@@ -124,6 +122,47 @@ namespace chess_solver
             }
 
             return board;
+        }
+
+        public static void DetermineWinner(Board b)
+        {
+            bool foundBlack = false;
+            bool foundWhite = false;
+
+            for(int x = 0; x < b.b.Count; x++)
+            {
+                for(int y = 0; y < b.b[x].Count; y++)
+                {
+                    //Check that the tile we're checking isn't null
+                    if(!(b.b[x][y] is null))
+                    {
+                        ChessPiece p = (ChessPiece)b.b[x][y];
+                        if(p.t == ChessPiece.piece_type.KING)
+                        {
+                            if(p.c == ChessPiece.piece_colour.BLACK)
+                            {
+                                foundBlack = true;
+                            }
+                            if (p.c == ChessPiece.piece_colour.WHITE)
+                            {
+                                foundWhite = true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(foundBlack && foundWhite)
+            {
+                draws++;
+            }
+            else if(foundBlack && !foundWhite)
+            {
+                BlackWins++;
+            }else if(!foundBlack && foundWhite)
+            {
+                WhiteWins++;
+            }
         }
 
         public static int WhiteWins = 0;

@@ -10,8 +10,6 @@ namespace chess_solver
     /// </summary>
     public class Board
     {
-        //Debugging
-        public string name = "";
         public enum GameType
         {
             CHESS
@@ -32,7 +30,7 @@ namespace chess_solver
         /// <summary>
         /// A constructor for a standard chess board.
         /// </summary>
-        public Board(int _x, int _y, GameType _gt, ChessPiece.piece_colour _turn)
+        public Board(int _x, int _y, GameType _gt, ChessPiece.piece_colour _turn, int _TurnsSinceCapture)
         {
             turn = _turn;
             size = (_x, _y);
@@ -49,8 +47,12 @@ namespace chess_solver
                 }
             }
         }
-        
-        
+        public Board(int _x, int _y, GameType _gt, ChessPiece.piece_colour _turn) : this(_x, _y, _gt, _turn, 0)
+        {
+
+        }
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -58,18 +60,8 @@ namespace chess_solver
         /// <returns>True if the king has been slain, false otherwise.</returns>
         public bool MakeMove(move m)
         {
-            if (gt == GameType.CHESS)
-            {
-                //Check if the king is dead
-                if (!(board[m.to.Item1][m.to.Item2] is null)){ 
-                    if(((ChessPiece)board[m.to.Item1][m.to.Item2]).t == ChessPiece.piece_type.KING){
-                        return true;
-                    }   
-                }
-            }
 
-
-            //Move piece
+            bool returnable = false;
 
             //Hold the piece we're moving in memory
             Piece movingPiece = (ChessPiece)board[m.from.Item1][m.from.Item2];
@@ -77,16 +69,11 @@ namespace chess_solver
             //See what you're killing
             if(!(board[m.to.Item1][m.to.Item2] is null))
             {
-                //     Console.WriteLine(((ChessPiece)movingPiece).c + "_" + ((ChessPiece)movingPiece).t + 
-                //     " killed a " +
-                //     ((ChessPiece)board[m.to.Item1][m.to.Item2]).c + "_" + ((ChessPiece)board[m.to.Item1][m.to.Item2]).t + "\n");
-                //
-                if (((ChessPiece)board[m.to.Item1][m.to.Item2]).t != ChessPiece.piece_type.PAWN) { 
-                Console.WriteLine(((ChessPiece)movingPiece).c + "_" + ((ChessPiece)movingPiece).t +
-                 " killed a " +
-                 ((ChessPiece)board[m.to.Item1][m.to.Item2]).c + "_" + ((ChessPiece)board[m.to.Item1][m.to.Item2]).t + "\n");
+                //If its a king, make sure to return true at the end
+                if(((ChessPiece)board[m.to.Item1][m.to.Item2]).t == ChessPiece.piece_type.KING)
+                {
+                    returnable = true;
                 }
-
             }
             //Put the piece in its new position, overwriting the old space
             board[m.to.Item1][m.to.Item2] = movingPiece;
@@ -107,11 +94,11 @@ namespace chess_solver
             if(TurnsSinceCapture > 50)
             {
                 //Signifies a draw
-                return true;
+                returnable = true;
             }
             this.TurnsSinceCapture++;   
             
-            return false;
+            return returnable;
         }
 
         public List<move> PossibleMoves()
@@ -221,7 +208,7 @@ namespace chess_solver
         public Board Copy()
         {
             //Create the board
-            Board newBoard = new Board(board.Count, board[0].Count, GameType.CHESS, this.turn);
+            Board newBoard = new Board(board.Count, board[0].Count, GameType.CHESS, this.turn, this.TurnsSinceCapture);
             for(int x = 0; x < board.Count; x++)
             {
                 for(int y = 0; y < board[x].Count; y++)

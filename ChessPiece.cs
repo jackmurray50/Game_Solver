@@ -293,7 +293,12 @@ namespace chess_solver
             }
             return possible_moves;
         }
-    #endregion moves
+        #endregion moves
+
+        public override string ToString()
+        {
+            return $"{this.colour} {this.type}";
+        }
     }
     public struct move
     {
