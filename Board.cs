@@ -15,7 +15,6 @@ namespace chess_solver
             CHESS
         }
         public GameType gt {get;}
-        public (int, int) size = (0,0);
         /// <summary>
         /// Our current board. Should be a list of 8 lists that contain 8 pieces    
         /// </summary>
@@ -33,7 +32,6 @@ namespace chess_solver
         public Board(int _x, int _y, GameType _gt, ChessPiece.piece_colour _turn, int _TurnsSinceCapture)
         {
             turn = _turn;
-            size = (_x, _y);
             gt = _gt;
 
             this.board = new List<List<Piece>>();
@@ -74,6 +72,7 @@ namespace chess_solver
                 {
                     returnable = true;
                 }
+                TurnsSinceCapture = 0;
             }
             //Put the piece in its new position, overwriting the old space
             board[m.to.Item1][m.to.Item2] = movingPiece;

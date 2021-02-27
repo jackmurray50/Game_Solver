@@ -34,10 +34,7 @@ namespace chess_solver
             protected set { type = value; }
         }
 
-        public char graphic { get; set; }
-
-
-        bool post_constructed = false;
+        public char graphic { get; set; } 
 
         public ChessPiece(piece_colour _colour, piece_type _type)
         {

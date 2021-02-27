@@ -16,7 +16,7 @@ namespace chess_solver
         }
 
         /// <summary>
-        /// One of a few 'solve' methods. It'll create a large binary tree and try to go through
+        /// One of a few 'solve' methods. It'll create a large tree and try to go through
         /// every possible permutation of the game, trying to solve it.
         /// It'll return True if it ever actually solves it, though that's largely impossible for
         /// chess.
@@ -26,36 +26,29 @@ namespace chess_solver
         /// <returns>True when (if?) its solved.</returns>
         public static bool SolveChess()
         {
+            double Shannon = Math.Pow(10, 40);
+            double moves = 0;
             Board b = BaseChessBoard();
-            List<GameTree<move>> gametrees = new List<GameTree<move>>();
+            Stack<(move, Board)> operationStack = new Stack<(move, Board)>();
+            //Push the initial stack
             foreach(move m in b.PossibleMoves())
             {
-                gametrees.Add(new GameTree<move>(new Node<move>(null, m)));
-                SolveChess(b, gametrees[gametrees.Count - 1 ].root);
+                operationStack.Push((m, b));
             }
-            //The GameTree all moves will be inserted into
-
-            return true;
-        }
-        /// <summary>
-        /// Recursive SolveChess function.
-        /// </summary>
-        /// <param name="b">The board to start working on</param>
-        /// <param name="cur">The node to add children to</param>
-        /// <returns></returns>
-        public static void SolveChess(Board b, Node<move> cur)
-        {
-            //Create a copy of the board
-            Board newBoard = b.Copy();
-            List<move> possibleMoves = newBoard.PossibleMoves();
-            foreach(move m in possibleMoves)
+            //While there's still operations on the stack
+            while(operationStack.Count > 0)
             {
-
-                //Check if the piece still exists
-                Node<move> newnode = new Node<move>(cur, m);
-                if (newBoard.MakeMove(m))
+                moves++;
+                //Step 0: Grab the necessary variables
+                (move, Board) operation = operationStack.Pop();
+                move opMove = operation.Item1;
+                Board opBoard = operation.Item2;
+                //Step 1: Perform the operation
+                moves++;
+                if (opBoard.MakeMove(opMove))
                 {
-                    string output = newBoard.ToString(m);
+                    //Step 2: Check if it's a win or not.
+                    string output = opBoard.ToString(opMove);
                     foreach (char c in output)
                     {
                         //the string is formatted so the place the piece came from is
@@ -78,15 +71,20 @@ namespace chess_solver
                         }
                     }
                     Console.Write($"\nBlack wins: {BlackWins}\nWhite wins: {WhiteWins}\nDraws: {draws}\nTotal games: {BlackWins + WhiteWins + draws}\n");
-                    //In an async function, add the required moves to a text file.
-                    DetermineWinner(newBoard);
-                    //For now, just yell
+                    DetermineWinner(opBoard);
                 }
                 else
                 {
-                    SolveChess(newBoard, newnode);
+                    //Step 3: If its not a win, push more operations to the stack
+                    foreach (move m in opBoard.PossibleMoves())
+                    {
+                        operationStack.Push((m, opBoard.Copy()));
+                    }
                 }
+                Console.WriteLine("Percent to completion: " + (moves / Shannon).ToString("P10"));
             }
+
+            return true;
         }
 
         public static Board BaseChessBoard()
